@@ -1,0 +1,370 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site1.master.cs" Inherits="project01.Site1" %>
+<%@ Register Src="~/Chatbot.ascx" TagPrefix="uc1" TagName="Chatbot" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <meta charset="UTF-8" />
+    <!-- ✅ Add Manifest -->
+<link rel="manifest" href="/manifest.json">
+
+<!-- ✅ PWA Meta Tags -->
+<meta name="theme-color" content="#0078d7">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My ASP.NET PWA">
+
+<!-- ✅ App Icons for iOS -->
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+
+    <title>FlightBook - Your Journey Starts Here</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Book flights, hotels, and car rentals at the best prices">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link href="CSS/StyleSheet1.css" rel="stylesheet" />
+
+    <style>
+        .logo2 { width: 25%; height: auto; }
+        /* Profile Circle */
+        .profile-pic { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; transition: transform 0.2s ease, border-color 0.2s ease; }
+        .profile-pic:hover { transform: scale(1.05); border-color: #0d6efd; }
+
+        /* Notification badge */
+        .notification-badge { position: absolute; top: -5px; right: -5px; background: red; color: white; font-size: 12px; font-weight: bold; padding: 3px 6px; border-radius: 50%; display: none; }
+
+        /* Chatbot fixed bottom */
+        uc1\:Chatbot { position: fixed; bottom: 20px; right: 20px; z-index: 1050; }
+
+        /* Dark Mode */
+        body.dark-mode { background: #121212; color: #f1f1f1; }
+        body.dark-mode .navbar { background-color: #222 !important; }
+        body.dark-mode .nav-link { color: #f1f1f1 !important; }
+        body.dark-mode .footer { background-color: #1a1a1a !important; color: #f1f1f1 !important; }
+
+        /* Logo responsive */
+        .logo2 { max-width: 100%; height: auto; }
+        
+        /* Extra header elements */
+        .live-users { font-weight: bold; color: #0078D7; }
+        #greeting { font-weight: 600; }
+        #toggle-mode { border: none; background: transparent; cursor: pointer; font-size: 18px; color: inherit; padding: 6px; line-height: 1; }
+        .social{
+            height:80%;
+            width:80%;
+        }
+    </style>
+</head>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('✅ Service Worker registered:', reg))
+                    .catch(err => console.log('❌ SW registration failed:', err));
+            });
+        }
+</script>
+
+<body>
+    <form runat="server">
+        <asp:ScriptManager ID="ScriptManager1" runat="server" />
+
+        <!-- Chatbot -->
+        <uc1:Chatbot ID="Chatbot" runat="server" />
+
+        <!-- Header / Navbar -->
+       <nav class="navbar navbar-expand-lg navbar-dark bg-primary  shadow-sm">
+    <div class="container-fluid">
+        <!-- Brand -->
+        <a class="navbar-brand d-flex align-items-center" href="Default.aspx">
+            <img src="Photos/logo3.png" alt="FlightBook" class="logo2 me-2" />
+            <span class="fw-bold text-light">FlightBook</span>
+        </a>
+
+        <!-- Toggler -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar Content -->
+      <div class="collapse navbar-collapse" id="navbarContent">
+
+    <!-- User Panel Links -->
+    <asp:PlaceHolder ID="PlaceHolder1" runat="server" Visible="true">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 nav-links">
+            <li class="nav-item"><a class="nav-link" href="Flights.aspx"><i class="fas fa-plane me-1"></i>Flights</a></li>
+            <li class="nav-item"><a class="nav-link" href="Hotels.aspx"><i class="fas fa-hotel me-1"></i>Hotels</a></li>
+            <li class="nav-item"><a class="nav-link" href="Cars.aspx"><i class="fas fa-car me-1"></i>Car Rentals</a></li>
+            <li class="nav-item"><a class="nav-link" href="Deals.aspx"><i class="fas fa-tag me-1"></i>Deals</a></li>
+            <li class="nav-item"><a class="nav-link" href="CommunitySupport.aspx"><i class="fas fa-headset me-1"></i>Support</a></li>
+        </ul>
+    </asp:PlaceHolder>
+
+    <!-- Admin Panel Links -->
+    <asp:PlaceHolder ID="phAdmin" runat="server" Visible="false">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0 nav-links">
+            <li class="nav-item">
+                <a class="nav-link text-warning fw-bold" href="AdminDashboard.aspx">
+                    <i class="fas fa-tachometer-alt me-1"></i>Admin Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-warning fw-bold" href="AdminUserLogs.aspx">
+                    <i class="fas fa-user-shield me-1"></i>Admin User Logs
+                </a>
+            </li>
+        
+            <li class="nav-item">
+                <a class="nav-link text-warning fw-bold" href="AdminNotifications.aspx">
+                    <i class="fas fa-user-shield me-1"></i>Admin Notifications
+                </a>
+            </li>
+        </ul>
+    </asp:PlaceHolder>
+
+</div>
+
+        <ul>
+                <!-- Live Info -->
+                <li class="nav-item me-3 text-light"><span id="weather" class="text-light small"></span></li>
+                <li class="nav-item me-3 text-light"><span id="clock" class="text-light small"></span></li>
+                <li class="nav-item me-3 text-light">
+                    <button type="button" id="toggle-mode" class="btn btn-sm btn-light">🌙</button>
+                </li>
+                <li class="nav-item me-3 text-light" id="greeting"></li>
+                <li class="nav-item me-3 text-light">Live Users: <asp:Label ID="Label1" runat="server" Text=""></asp:Label></li>
+            </ul>
+
+            <!-- Right Side -->
+            <ul class="navbar-nav ms-auto align-items-center">
+
+                <!-- Logged-in User -->
+                <asp:PlaceHolder ID="phUser" runat="server" Visible="false">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            <asp:Image ID="imgProfile" runat="server" CssClass="rounded-circle border border-light me-2" Width="35px" Height="35px" />
+                            <span class="text-light fw-semibold">
+                                <asp:Label ID="lblUsername" runat="server"></asp:Label>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="Profile.aspx"><i class="fas fa-user-circle me-2"></i>My Profile</a></li>
+                            <li><a class="dropdown-item" href="MyBookings.aspx"><i class="fas fa-ticket-alt me-2"></i>My Bookings</a></li>
+                            
+                            <li><a class="dropdown-item" href="CancelBooking.aspx"><i class="fas fa-ticket-alt me-2"></i>CancelBooking</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li>
+                                <asp:LinkButton ID="LogoutBtn" runat="server" Text="Logout"
+                                    CssClass="dropdown-item text-danger" OnClick="LogoutBtn_Click" />
+                            </li>
+                        </ul>
+                    </li>
+                </asp:PlaceHolder>
+
+                <!-- Guest (Not Logged In) -->
+                <asp:PlaceHolder ID="phGuest" runat="server" Visible="false">
+                    <li class="nav-item">
+                        <a class="nav-link text-light fw-semibold" href="Login.aspx">
+                            <i class="fas fa-sign-in-alt me-1"></i>Login
+                        </a>
+                    </li>
+                </asp:PlaceHolder>
+
+               
+            </ul>
+        </div>
+           <!-- 🔔 Notifications -->
+<asp:UpdatePanel ID="upNotification" runat="server">
+    <ContentTemplate>
+        <li class="nav-item position-relative">
+            <a class="nav-link" href="Notifications.aspx">
+                <img src="Photos/notification.png" alt="Notifications" style="height:28px;">
+                <span id="notificationBadge" runat="server"
+                      style="position:absolute; top:-5px; right:-8px;
+                             background-color:#dc3545; color:white;
+                             font-size:12px; padding:2px 6px;
+                             border-radius:50%; display:none;
+                             font-weight:bold;">0</span>
+            </a>
+        </li>
+    </ContentTemplate>
+    <Triggers>
+        <asp:AsyncPostBackTrigger ControlID="TimerNotif" EventName="Tick" />
+    </Triggers>
+</asp:UpdatePanel>
+
+<!-- Timer for periodic update -->
+<asp:Timer ID="TimerNotif" runat="server" Interval="8000" OnTick="TimerNotif_Tick" />
+
+    <!--</div>-->
+</nav>
+
+        <audio id="notifSound" src="notification.mp3" preload="auto"></audio>
+
+<script type="text/javascript">
+    var lastCount = 0;
+    Sys.WebForms.PageRequestManager.getInstance().add_endRequest(function () {
+        var badge = document.getElementById("notificationBadge");
+        var currentCount = parseInt(badge.innerText) || 0;
+
+        if (currentCount > lastCount) {
+            // Play alert sound
+            var audio = document.getElementById("notifSound");
+            audio.play().catch(() => { });
+        }
+        lastCount = currentCount;
+    });
+</script>
+
+        <!-- Page Content -->
+        <div class="container my-4">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server"></asp:ContentPlaceHolder>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer bg-dark text-white pt-5 pb-3 mt-5">
+            <div class="container">
+                <div class="row">
+                    <!-- About Us -->
+                    <div class="col-md-3 mb-4">
+                        <h5>About Us</h5>
+                        <p>FlightBook is a leading online travel agency with over 10 million satisfied customers worldwide. Book your dream trip with confidence.</p>
+                        <div class="d-flex gap-2 social-links">
+                            <a href="https://www.facebook.com/flightbooking"><img src="Photos/facebook.png" alt="Facebook" class="social" ></a>
+                            <a href="https://x.com/Dhvanit_1209"><img src="Photos/twitter.png" alt="Twitter" class="social"></a>
+                            <a href="https://www.instagram.com/dhvanit_ptl_12"><img src="Photos/instagram.png" alt="Instagram" class="social"></a>
+                            <a href="https://in.linkedin.com/in/narendramodi"><img src="Photos/linkedin.png" alt="LinkedIn" class="social"></a>
+                        </div>
+                    </div>
+
+                    <!-- Quick Links -->
+                    <div class="col-md-3 mb-4">
+                        <h5>Quick Links</h5>
+                        <ul class="list-unstyled">
+                            <li><a href="Flights.aspx" class="text-white text-decoration-none">Flight Search</a></li>
+                            <li><a href="Hotels.aspx" class="text-white text-decoration-none">Hotel Deals</a></li>
+                            <li><a href="Cars.aspx" class="text-white text-decoration-none">Car Rentals</a></li>
+                            <li><a href="Vacations.aspx" class="text-white text-decoration-none">Vacation Packages</a></li>
+                            <li><a href="TravelGuides.aspx" class="text-white text-decoration-none">Travel Guides</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- Contact Info -->
+                    <div class="col-md-3 mb-4">
+                        <h5>Contact Info</h5>
+                        <p><i class="fas fa-map-marker-alt me-2"></i><a href="https://www.google.com/maps/search/?api=1&query=Anand+Agricultural+University,+Anand" class="text-white text-decoration-none">Anand Agricultural University, Anand, Gujarat</a></p>
+                        <p><i class="fas fa-phone me-2"></i>+91 9876543215</p>
+                        <p><i class="fas fa-envelope me-2"></i><a href="mailto:dhvanitpatel@student.aau.in" class="text-white text-decoration-none">dhvanitpatel@student.aau.in</a></p>
+                    </div>
+
+                    <!-- Newsletter -->
+                    <div class="col-md-3 mb-4">
+                        <h5>Newsletter</h5>
+                        <p>Subscribe to get latest travel deals and promotions</p>
+                        <div class="input-group mb-2">
+                            <input type="email" class="form-control" placeholder="Your email address">
+                            <button class="btn btn-primary">Subscribe</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center border-top border-secondary pt-3">
+                    &copy; <%= DateTime.Now.Year %> FlightBook. All rights reserved.
+                    <a href="#" class="text-white ms-2 text-decoration-none">Privacy Policy</a> |
+                    <a href="#" class="text-white ms-1 text-decoration-none">Terms of Service</a>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Custom JS (Greeting, Clock, Weather, Notifications, Dark Mode, Live Users) -->
+        <script>
+           
+            setTimeout(() => updateNotifications(5), 3000);
+            setTimeout(() => updateNotifications(0), 8000);
+
+            document.addEventListener("DOMContentLoaded", function () {
+                let username = '<%= (Session["username"] != null ? Session["username"].ToString() : "Guest") %>';
+
+                // Greeting
+                const greetingEl = document.getElementById("greeting");
+                function setGreeting() {
+                    const hour = new Date().getHours();
+                    let greetingText = "Hello";
+                    if (hour < 12) greetingText = "Good Morning";
+                    else if (hour < 18) greetingText = "Good Afternoon";
+                    else greetingText = "Good Evening";
+                    if (greetingEl) greetingEl.textContent = `${greetingText}, ${username}`;
+                }
+                setGreeting();
+
+                // Clock
+                const clockEl = document.getElementById("clock");
+                function updateClock() { if (clockEl) clockEl.textContent = new Date().toLocaleTimeString(); }
+                updateClock(); setInterval(updateClock, 1000);
+
+                // Weather (OpenWeatherMap)
+                const weatherEl = document.getElementById("weather");
+                const apiKey = "ee537900e6312a194b4175aa6e96262f";
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(async function (pos) {
+                        const lat = pos.coords.latitude;
+                        const lon = pos.coords.longitude;
+                        try {
+                            const res = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`);
+                            const data = await res.json();
+                            if (weatherEl) weatherEl.textContent = `${data.name}: ${Math.round(data.main.temp)}°C, ${data.weather[0].main}`;
+                        } catch { if (weatherEl) weatherEl.textContent = "Weather: N/A"; }
+                        
+
+                        
+                       }, () => { if (weatherEl) weatherEl.textContent = "Weather: Permission denied"; });
+                } else { if (weatherEl) weatherEl.textContent = "Geolocation not supported"; }
+
+                // Dark Mode
+                const toggleBtn = document.getElementById("toggle-mode");
+                function applyTheme(theme) { document.body.classList.toggle("dark-mode", theme === "dark"); toggleBtn.textContent = (theme === "dark") ? "☀️" : "🌙"; }
+                let storedTheme = localStorage.getItem("theme") || "light"; applyTheme(storedTheme);
+                toggleBtn.addEventListener("click", () => { storedTheme = (storedTheme === "dark") ? "light" : "dark"; applyTheme(storedTheme); localStorage.setItem("theme", storedTheme); });
+
+               
+            });
+        </script>
+        <script src="Scripts/jquery-3.6.0.min.js"></script>
+<script src="Scripts/jquery.signalR-2.4.2.min.js"></script>
+<script src="/signalr/hubs"></script>
+
+<script>
+    $(function () {
+        var notifCountElem = $("#notificationCount");
+
+        // Connect to SignalR hub
+        var hub = $.connection.notificationHub;
+
+        hub.client.receiveNotification = function (title, message, url) {
+            var currentCount = parseInt(notifCountElem.text()) || 0;
+            notifCountElem.text(currentCount + 1);
+
+            // Optional: play sound
+            var audio = new Audio('/notification.mp3');
+            audio.play();
+        };
+
+        $.connection.hub.start().done(function () {
+            console.log("Connected to SignalR hub");
+        });
+    });
+</script>
+
+    </form>
+</body>
+</html>
