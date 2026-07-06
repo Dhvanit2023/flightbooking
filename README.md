@@ -167,6 +167,7 @@ B.Tech – Agricultural Information Technology
 College of Agricultural Information Technology (AAU), Anand
 
 GitHub: https://github.com/Dhvanit2023
+Hosted website: flight2025.somee.com
 
 ---
 
